@@ -4,6 +4,7 @@ This module contains PokeType, TypeEffectiveness and an abstract version of the 
 from abc import ABC
 from enum import Enum
 from data_structures.referential_array import ArrayR
+import csv
 
 class PokeType(Enum):
     """
@@ -42,14 +43,23 @@ class TypeEffectiveness:
         Returns:
             float: The effectiveness of the attack, as a float value between 0 and 4.
         """
-        raise NotImplementedError
+        with open('type_effectiveness.csv','r') as file:
+            effectiveness_table = csv.reader(file)
+            for i, row in enumerate(effectiveness_table):
+                if i == attack_type.value + 1:
+                    effectiveness = row[defend_type.value]
+        return float(effectiveness)
 
     def __len__(self) -> int:
         """
         Returns the number of types of Pokemon
         """
-        raise NotImplementedError
-
+        with open("type_effectiveness.csv","r") as file:
+            effectiveness_table = csv.reader(file)
+            for i, row in enumerate(effectiveness_table):
+                if i == 0:
+                    num_elements = len(row)
+                    return num_elements
 
 class Pokemon(ABC): # pylint: disable=too-few-public-methods, too-many-instance-attributes
     """
@@ -161,7 +171,8 @@ class Pokemon(ABC): # pylint: disable=too-few-public-methods, too-many-instance-
         Returns:
             int: The damage that this Pokemon inflicts on the other Pokemon during an attack.
         """
-        raise NotImplementedError
+        self.battle_power = self.battle_power * TypeEffectiveness.get_effectiveness(self.poketype, other_pokemon)
+        return self.battle_power
 
     def defend(self, damage: int) -> None:
         """
@@ -189,7 +200,19 @@ class Pokemon(ABC): # pylint: disable=too-few-public-methods, too-many-instance-
         Evolves the Pokemon to the next stage in its evolution line, and updates
           its attributes accordingly.
         """
-        raise NotImplementedError
+        current_pokemon = self.name
+        evo_pokemon = 0
+        if self.evolution_line == self.evolution_line[-1]:
+            pass
+        else:
+            self.evolution_line[evo_pokemon] = self.evolution_line[evo_pokemon + 1]
+            evo_pokemon += 1
+            current_pokemon = self.evolution_line[evo_pokemon]
+            self.name = current_pokemon
+            self.battle_power *= 1.5
+            self.speed *= 1.5
+            self.defence *=1.5
+            self.health *= 1.5
 
     def is_alive(self) -> bool:
         """

@@ -13,7 +13,14 @@ class PokeTeam:
         self.team_count = 0
 
     def choose_manually(self):
-        raise NotImplementedError
+        team_length = int(input("how many pokemons you want to battle: "))
+        valid_pokemon = False
+        if team_length > self.TEAM_LIMIT:
+            raise ValueError(" cant not exceed team limit")
+        else:
+            self.team = ArrayR(self.team)
+            while team_length[-1] == None:
+            pass
 
     def choose_randomly(self) -> None:
         all_pokemon = get_all_pokemon_types()
@@ -36,7 +43,7 @@ class PokeTeam:
         raise NotImplementedError
 
     def __getitem__(self, index: int):
-        raise NotImplementedError
+        return self.array[index]
 
     def __len__(self):
         raise NotImplementedError
